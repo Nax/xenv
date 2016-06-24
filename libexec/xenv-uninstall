@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+# Desc: Uninstall an env or a plugin
+
+usage() {
+  echo "Usage:"
+  echo "  xenv uninstall <env>"
+  echo "  xenv uninstall -p <env> <plugin>"
+  exit 1
+}
+
+parse_options() {
+  while [ ! "$#" = "0" ]; do
+    case "$1" in
+      -p|--plugin)
+        opt_plugin=true ;;
+      *)
+        parse_raw "$1" ;;
+    esac
+    shift
+  done
+}
+
+parse_raw() {
+  if [ -z "${ENV_NAME+x}" ]; then
+    ENV_NAME="$1"
+  else
+    if $opt_plugin && [ -z "${PLUGIN_NAME+x}" ]; then
+      PLUGIN_NAME="$1"
+    else
+      usage
+    fi
+  fi
+}
+
+opt_plugin=false
+
+parse_options "$@"
+
+if [ -z "${ENV_NAME+x}" ]; then
+  usage
+elif $opt_plugin && [ -z "${PLUGIN_NAME+x}" ]; then
+  usage
+fi
+
+if $opt_plugin; then
+  PLUGIN_DIR="$XENV_ROOT/envs/$ENV_NAME/plugins/$PLUGIN_NAME"
+  PLUGIN_MANIFEST="$XENV_ROOT/share/xenv-plugins/$ENV_NAME/$PLUGIN_NAME"
+  if [ ! -e "$PLUGIN_DIR" ] || [ ! -e "$PLUGIN_MANIFEST" ]; then
+    echo "Plugin $PLUGIN_NAME does not exist"
+    exit 1
+  fi
+  rm -rf "$PLUGIN_DIR"
+  echo "Plugin $PLUGIN_NAME was removed"
+else
+  ENV_DIR="$XENV_ROOT/envs/$ENV_NAME"
+  ENV_MANIFEST="$XENV_ROOT/share/xenv-envs/$ENV_NAME"
+  if [ ! -e "$ENV_DIR" ] || [ ! -e "$ENV_MANIFEST" ]; then
+    echo "Env $ENV_NAME does not exist"
+    exit 1
+  fi
+  rm -rf "$ENV_DIR"
+  echo "Env $ENV_NAME was removed"
+fi
+
