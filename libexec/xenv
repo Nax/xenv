@@ -14,7 +14,7 @@ mkdir -p "$XENV_ROOT/envs"
 source "$XENV_ROOT/lib/init.sh"
 
 if [ "$#" = "0" ]; then
-  xenv_exec
+  xenv_exec "help"
 else
   xenv_exec "$@"
 fi

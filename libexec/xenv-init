@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Desc: Init xenv
+
 opt_no_action=true
 opt_rehash=true
 opt_shell=''

@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 
+# Desc: Get the xenv root directory
+
 echo "$XENV_ROOT"
 

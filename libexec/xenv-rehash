@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Desc: Reload fresh envs into the environment
+
 echo 'Please run:'
 echo '  eval "$(xenv init - $SHELL)"'
 

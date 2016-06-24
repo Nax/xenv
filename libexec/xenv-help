@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Desc: Display this page
+
+echo "xenv"
+echo "Usage: xenv <command> [arg]..."
+echo
+echo "Some useful xenv commands are:"
+
+for f in "$XENV_ROOT/libexec/xenv-"*; do
+  cmd_name=${f##*/xenv-}
+  if [[ "$cmd_name" == sh-* ]]; then
+    continue
+  fi
+  cmd_desc="$(grep -m 1 '# Desc: ' $f | cut -c 9-)"
+  printf "  %-12s %s\n" "$cmd_name" "$cmd_desc"
+done
+

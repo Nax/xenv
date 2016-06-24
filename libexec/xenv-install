@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Desc: install an env
+# Desc: Install an env or a plugin
 
 shopt -s nullglob
 
