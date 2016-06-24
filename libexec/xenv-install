@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+# Desc: install an env
+
+shopt -s nullglob
+
+usage() {
+  echo "Usage:"
+  echo "  xenv install [-f] <env>"
+  echo "  xenv install -l"
+  echo "  xenv install -L"
+}
+
+source "$XENV_ROOT/lib/git.sh"
+
+opt_list=false
+opt_local=false
+opt_force=false
+
+while [ ! "$#" = "0" ]; do
+  case "$1" in
+    -l|--list)
+      opt_list=true ;;
+    -L|--local)
+      opt_local=true ;;
+    -f|--force)
+      opt_force=true ;;
+    *)
+      if [ -n "${ENV_NAME+x}" ]; then
+        usage
+        exit 1
+      fi
+      ENV_NAME="$1"
+  esac
+  shift
+done
+
+# Install ENV_NAME
+if [ -e "$XENV_ROOT/envs/$ENV_NAME" ]; then
+  $opt_force || exit
+fi
+
+ENVS_DIR="$XENV_ROOT/share/xenv-envs"
+
+if [ ! -e "$ENVS_DIR/$ENV_NAME" ]; then
+  echo "Unknown env $ENV_NAME"
+  exit 1
+fi
+
+read_line GIT_URL "$ENVS_DIR/$ENV_NAME"
+git clone "$GIT_URL" "$XENV_ROOT/envs/$ENV_NAME"
+
+echo "$ENV_NAME was installed."
+

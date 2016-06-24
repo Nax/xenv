@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+echo 'Please run:'
+echo '  eval "$(xenv init - $SHELL)"'
+

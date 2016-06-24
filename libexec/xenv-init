@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+opt_no_action=true
+opt_rehash=true
+opt_shell=''
+
+while [ ! "$#" = "0" ]; do
+  case "$1" in
+    -)
+      opt_no_action=false ;;
+    --no-rehash)
+      opt_rehash=false ;;
+    *)
+        opt_shell="$1" ;;
+  esac
+  shift
+done
+
+if $opt_no_action; then
+  echo "Add this to your shell config:"
+  echo '  eval "$(xenv init -)"'
+  exit
+fi
+
+# Placeholder function
+echo 'export XENV_ROOT="$(command -- xenv root)"'
+echo
+echo 'function xenv() {'
+echo '  if [ "$1" = rehash ]; then'
+echo '    local cmd="$1"'
+echo '    shift'
+echo '    source "$XENV_ROOT/libexec/xenv-sh-$cmd"'
+echo '  else'
+echo '    command -- xenv "$@"'
+echo '  fi'
+echo '}'
+echo
+echo 'xenv rehash'
+

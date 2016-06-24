@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Base path setup
+cd $(dirname "${BASH_SOURCE[0]}")
+cd ..
+XENV_ROOT=$(pwd)
+export XENV_ROOT
+
+# Base dirs
+
+mkdir -p "$XENV_ROOT/envs"
+
+# Load shared functions
+source "$XENV_ROOT/lib/init.sh"
+
+if [ "$#" = "0" ]; then
+  xenv_exec
+else
+  xenv_exec "$@"
+fi
+
