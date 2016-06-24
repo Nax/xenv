@@ -4,7 +4,7 @@ for f in "$XENV_ROOT/envs/"*; do
   if [ -e "$f" ]; then
     env_name="${f##*/}"
     env_var="$(echo $env_name | tr '[a-z]' '[A-Z]')_ROOT"
-    env_var_value="$(eval \$$env_var)"
+    env_var_value="$(eval echo \$$env_var)"
     if [ -z "$env_var_value" ]; then
       eval export "$env_var"="$XENV_ROOT/envs/$env_name"
       export PATH="$XENV_ROOT/envs/$env_name/bin:$PATH"

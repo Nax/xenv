@@ -4,51 +4,106 @@
 
 shopt -s nullglob
 
-usage() {
-  echo "Usage:"
-  echo "  xenv install [-f] <env>"
-  echo "  xenv install -l"
-  echo "  xenv install -L"
-}
-
 source "$XENV_ROOT/lib/git.sh"
 
 opt_list=false
 opt_local=false
 opt_force=false
-
-while [ ! "$#" = "0" ]; do
-  case "$1" in
-    -l|--list)
-      opt_list=true ;;
-    -L|--local)
-      opt_local=true ;;
-    -f|--force)
-      opt_force=true ;;
-    *)
-      if [ -n "${ENV_NAME+x}" ]; then
-        usage
-        exit 1
-      fi
-      ENV_NAME="$1"
-  esac
-  shift
-done
-
-# Install ENV_NAME
-if [ -e "$XENV_ROOT/envs/$ENV_NAME" ]; then
-  $opt_force || exit
-fi
+opt_plugin=false
 
 ENVS_DIR="$XENV_ROOT/share/xenv-envs"
+PLUGINS_DIR="$XENV_ROOT/share/xenv-plugins"
 
-if [ ! -e "$ENVS_DIR/$ENV_NAME" ]; then
-  echo "Unknown env $ENV_NAME"
+usage() {
+  echo "Usage:"
+  echo "  xenv install [-f] <env>"
+  echo "  xenv install -p <env> <plugin>"
+  echo "  xenv install [-p] -l"
+  echo "  xenv install [-p] -L"
   exit 1
+}
+
+parse_raw() {
+  if [ -n "${ENV_NAME+x}" ]; then
+    if $opt_plugin && [ -z "${PLUGIN_NAME+x}" ]; then
+      PLUGIN_NAME="$1"
+    else
+      usage
+    fi
+  else
+    ENV_NAME="$1"
+  fi
+}
+
+parse_options() {
+  while [ ! "$#" = "0" ]; do
+    case "$1" in
+      -l|--list)
+        opt_list=true ;;
+      -L|--local)
+        opt_local=true ;;
+      -f|--force)
+        opt_force=true ;;
+      -p|--plugin)
+        opt_plugin=true ;;
+      *)
+        parse_raw "$1" ;;
+    esac
+    shift
+  done
+}
+
+install_env() {
+  local env_name="$1"
+  
+  if [ -e "$XENV_ROOT/envs/$env_name" ]; then
+    $opt_force || exit
+  fi
+  
+  if [ ! -e "$ENVS_DIR/$env_name" ]; then
+    echo "Unknown env $env_name"
+    exit 1
+  fi
+
+  read_line GIT_URL "$ENVS_DIR/$env_name"
+  git clone "$GIT_URL" "$XENV_ROOT/envs/$env_name"
+
+  echo "$env_name was installed."
+}
+
+install_plugin() {
+  local env_name="$1"
+  local plugin_name="$2"
+
+  if [ ! -e "$XENV_ROOT/envs/$env_name" ]; then
+    echo "$env_name is not installed"
+    exit 1
+  fi
+
+  if [ ! -e "$PLUGINS_DIR/$env_name/$plugin_name" ]; then
+    echo "Unknown plugin $plugin_name"
+    exit 1
+  fi
+
+  read_line GIT_URL "$PLUGINS_DIR/$env_name/$plugin_name"
+  mkdir -p "$XENV_ROOT/envs/$env_name/plugins"
+  git clone "$GIT_URL" "$XENV_ROOT/envs/$env_name/plugins/$plugin_name"
+
+  echo "$plugin_name was installed"
+}
+
+parse_options "$@"
+
+if [ -z "${ENV_NAME+x}" ]; then
+  usage
 fi
 
-read_line GIT_URL "$ENVS_DIR/$ENV_NAME"
-git clone "$GIT_URL" "$XENV_ROOT/envs/$ENV_NAME"
-
-echo "$ENV_NAME was installed."
+if $opt_plugin; then
+  if [ -z "${PLUGIN_NAME+x}" ]; then
+    usage
+  fi
+  install_plugin "$ENV_NAME" "$PLUGIN_NAME"
+else
+  install_env "$ENV_NAME"
+fi
 
