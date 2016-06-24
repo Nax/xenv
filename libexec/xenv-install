@@ -94,6 +94,42 @@ install_plugin() {
 
 parse_options "$@"
 
+if $opt_list; then
+  for f in "$ENVS_DIR/"*; do
+    env_name="${f##*/}"
+    if $opt_plugin; then
+      for g in "$PLUGINS_DIR/$env_name/"*; do
+        plugin_name="${g##*/}"
+        echo "  $env_name/$plugin_name"
+      done
+    else
+      echo "  $env_name"
+    fi
+  done
+  exit
+fi
+
+if $opt_local; then
+  for f in "$XENV_ROOT/envs/"*; do
+    env_name="${f##*/}"
+    if [ ! -e "$ENVS_DIR/$env_name" ]; then
+      continue
+    fi
+    if $opt_plugin; then
+      for g in "$XENV_ROOT/envs/$env_name/plugins/"*; do
+        plugin_name="${g##*/}"
+        if [ ! -e "$PLUGINS_DIR/$env_name/$plugin_name" ]; then
+          continue
+        fi
+        echo "  $env_name/$plugin_name"
+      done
+    else
+      echo "  $env_name"
+    fi
+  done
+  exit
+fi
+
 if [ -z "${ENV_NAME+x}" ]; then
   usage
 fi
