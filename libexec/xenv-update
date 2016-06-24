@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+# Desc: Update xenv and every env and plugin
+
+shopt -s nullglob
+
+git_update() {
+  local repo="$1"
+  local name="$2"
+  pushd "$repo"
+  
+  if [ ! -e "./.git" ]; then
+    popd
+    return
+  fi
+  echo "Updating $name"
+  local pre_commit="$(git rev-parse --short HEAD)"
+  git pull -f &>/dev/null
+  local post_commit="$(git rev-parse --short HEAD)"
+  if [ ! "$pre_commit" = "$post_commit" ]; then
+    echo "  $pre_commit -> $post_commit"
+  fi
+  popd
+}
+
+git_update "$XENV_ROOT" "xenv"
+
+for f in "$XENV_ROOT/envs/"*; do
+  env_name="${f##*/}"
+  git_update "$f" "$env_name"
+  for g in "$f/plugins/"*; do
+    plugin_name="${g##*/}"
+    git_update "$g" "$env_name/$plugin_name"
+  done
+done
+
