@@ -5,8 +5,8 @@ for f in "$XENV_ROOT/envs/"*; do
     env_name="${f##*/}"
     env_var="$(echo $env_name | tr '[a-z]' '[A-Z]')_ROOT"
     env_var_value="$(eval echo \$$env_var)"
-    if [ ! "$env_var_value" = "$XENV_ROOT/envs/$env_name" ]; then
-      eval export "$env_var"="$XENV_ROOT/envs/$env_name"
+    eval export "$env_var"="$XENV_ROOT/envs/$env_name"
+    if [[ ! ":$PATH:" == *"$XENV_ROOT/envs/$env_name/bin"* ]]; then
       export PATH="$XENV_ROOT/envs/$env_name/bin:$PATH"
       eval "$($env_name init - $SHELL)"
     fi
