@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+if [ -z "$(find $XENV_ROOT/envs -maxdepth 1 | tail -n +2)" ]; then
+  return
+fi
+
+
 for f in "$XENV_ROOT/envs/"*; do
   if [ -e "$f" ]; then
     env_name="${f##*/}"
