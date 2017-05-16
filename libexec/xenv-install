@@ -4,8 +4,6 @@
 
 shopt -s nullglob
 
-source "$XENV_ROOT/lib/git.sh"
-
 opt_list=false
 opt_local=false
 opt_force=false
