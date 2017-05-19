@@ -13,8 +13,7 @@ for f in "$XENV_ROOT/envs/"*; do
     eval export "$env_var"="$XENV_ROOT/envs/$env_name"
     if [[ ! ":$PATH:" == *"$XENV_ROOT/envs/$env_name/bin"* ]]; then
       export PATH="$XENV_ROOT/envs/$env_name/bin:$PATH"
-      eval "$($env_name init - $SHELL)"
     fi
+    eval "$($env_name init - $SHELL)"
   fi
 done
-

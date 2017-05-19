@@ -4,4 +4,3 @@
 
 echo 'Please run:'
 echo '  eval "$(xenv init - $SHELL)"'
-

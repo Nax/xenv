@@ -38,4 +38,3 @@ echo '  fi'
 echo '}'
 echo
 echo 'xenv rehash'
-
