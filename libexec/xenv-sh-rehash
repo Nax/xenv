@@ -14,6 +14,10 @@ for f in "$XENV_ROOT/envs/"*; do
     if [[ ! ":$PATH:" == *"$XENV_ROOT/envs/$env_name/bin"* ]]; then
       export PATH="$XENV_ROOT/envs/$env_name/bin:$PATH"
     fi
+    if [[ "$env_name" == "pyenv" ]]; then
+      # pyenv has a separate path command now
+      eval "$($env_name init --path $SHELL)"
+    fi
     eval "$($env_name init - $SHELL)"
   fi
 done
